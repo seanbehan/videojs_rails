@@ -1,0 +1,24 @@
+<!-- Begin VideoJS -->
+<div class="video-js-box">
+  <!-- Using the Video for Everybody Embed Code http://camendesign.com/code/video_for_everybody -->
+  <video id="<%=@options[:id]%>" class="<%= @options[:classes] %> video-js" width="<%=@options[:width]%>" height="<%=@options[:height]%>" controls="controls" preload="auto">
+
+    <source src="<%=@options[:source]%>" type='video/mp4; codecs="avc1.42E01E, mp4a.40.2"' />
+
+    <!-- Flash Fallback. Use any flash video player here. Make sure to keep the vjs-flash-fallback class. -->
+    <object id="flash_fallback_1" class="vjs-flash-fallback" width="<%=@options[:width]%>" height="<%=@options[:height]%>" type="application/x-shockwave-flash" data="http://releases.flowplayer.org/swf/flowplayer-3.2.1.swf">
+      <param name="movie" value="http://releases.flowplayer.org/swf/flowplayer-3.2.1.swf" />
+      <param name="allowfullscreen" value="true" />
+      <param name="flashvars" value='config={"playlist":["<%=@options[:poster]%>", {"url": "<%=@options[:source]%>","autoPlay":false,"autoBuffering":true}]}' />
+
+      <!-- Image Fallback. Typically the same as the poster image. -->
+      <img src="<%=@options[:poster]%>" width="<%=@options[:width]%>" height="<%=@options[:height]%>" alt="" title="" />
+    </object>
+  </video>
+
+  <!-- Download links provided for devices that can't play video in the browser. -->
+  <p class="vjs-no-video"><strong>Download Video:</strong>
+    <a href="<%=@options[:source]%>"><%=@options[:source]%></a>,
+  </p>
+</div>
+<!-- End VideoJS -->
