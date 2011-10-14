@@ -3,6 +3,7 @@
 ## Installation
 
 Add to your Gemfile
+
 ```ruby
 
 gem 'videojs_rails
