@@ -42,7 +42,7 @@ You can optionally include skins by requiring in app/assets/stylesheets/applicat
 
 ```erb
 
-<%= videojs_rails source: "http://domain.com/path/to/video.mp4" %>
+<%= videojs_rails source: "http://domain.com/path/to/video.mp4", width:"400" %>
 
 ```
 
