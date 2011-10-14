@@ -6,7 +6,7 @@ Add to your Gemfile
 
 ```ruby
 
-gem 'videojs_rails
+gem 'videojs_rails'
 
 ```
 
