@@ -39,6 +39,8 @@ You can optionally include skins by requiring in app/assets/stylesheets/applicat
 
 ```
 
+_currently not working_
+
 ## Usage
 
 ```erb
