@@ -34,6 +34,7 @@ You can optionally include skins by requiring in app/assets/stylesheets/applicat
 /*
 *= require_self
 *= require videojs
+*= require skins/hu.css
 */
 
 ```
