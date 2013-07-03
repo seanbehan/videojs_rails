@@ -1,52 +1,41 @@
-# VideoJS for Rails 3.1 Asset Pipeline
+# VideoJS for Asset Pipeline
 
 ## Installation
 
 Add to your Gemfile
 
 ```ruby
-
 gem 'videojs_rails'
-
 ```
 
 And run bundle to install the library.
 
 ```ruby
-
 bundle
-
 ```
 
 Add the resources to your application.js file
 
 ```coffeescript
-
 # app/assets/javascripts/application.js
-//= require videojs
-
+//= require video
 ```
 
-You can optionally include skins by requiring in app/assets/stylesheets/application.css
+And that resource to application.css file
 
 ```sass
-
 /*
 *= require_self
 *= require videojs
-*= require skins/hu.css
 */
-
 ```
 
-_currently not working_
+_currently skins are not implemented (after migrate to 4.1 version)_
 
 ## Usage
 
 ```erb
-
 <%= videojs_rails source: "http://domain.com/path/to/video.mp4", width:"400px" %>
-
 ```
 
 ## Resources
