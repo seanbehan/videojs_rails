@@ -32,6 +32,12 @@ And that resource to application.css file
 
 _currently skins are not implemented (after migrate to 4.1 version)_
 
+And to production.rb add this line
+
+```ruby
+config.assets.precompile += %w( video-js.swf vjs.eot vjs.svg vjs.ttf vjs.woff )
+```
+
 ## Usage
 
 ```erb
