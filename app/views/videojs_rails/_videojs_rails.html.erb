@@ -1,10 +1,16 @@
 <div class="video-js-box">
   <video id="<%=@options[:id]%>" class="<%= @options[:classes] %> video-js vjs-default-skin" controls preload="auto" width="<%=@options[:width]%>" height="<%=@options[:height]%>" poster="<%= @options[:poster] %>" data-setup="{}">
-    <source src="<%=@options[:source]%>" type='video/mp4' />
-    <%# In future %>
-    <%#<%- if @options[:captions] %>
-      <%#<track kind="captions" src="demo.captions.vtt" srclang="en" label="English"></track>[> Tracks need an ending tag thanks to IE9 <]%>
-    <%#<%- end %>C%>
+		<% if @options[:sources] %>
+			<%- @options[:sources].each do |type, source| %>
+				<source src="<%= source %>" type='video/<%= type %>' />
+			<%- end %>
+		<%- end %>
+
+		<%# TODO: Add some function to change ISO country code to name %>
+		<% if @options[:captions] %>
+			<%- @options[:captions].each do |lang, caption| %>
+				<track kind="captions" src="<%= caption %>" srclang="<%= lang %>" label="<%= lang %>"></track>
+			<%- end %>
+		<%- end %>
   </video>
-  <p class="vjs-no-video"><a href="<%=@options[:source]%>">download</a> </p>
 </div>

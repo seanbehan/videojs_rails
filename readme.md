@@ -41,8 +41,17 @@ config.assets.precompile += %w( video-js.swf vjs.eot vjs.svg vjs.ttf vjs.woff )
 ## Usage
 
 ```erb
-<%= videojs_rails source: "http://domain.com/path/to/video.mp4", width:"400px" %>
+<%= videojs_rails sources: { mp4: "http://domain.com/path/to/video.mp4", webm: "http://another.com/path/to/video.webm" }, width:"400" %>
 ```
+
+## Captions
+
+This is currently experimental function.
+
+```erb
+<%= videojs_rails sources: { mp4: "http://domain.com/path/to/video.mp4" }, width:"400", captions: { en: "http://domain.com/path/to/captions.vvt" } %>
+```
+
 
 ## Resources
 http://videojs.com/
