@@ -160,10 +160,10 @@ so you can upgrade to newer versions easier. You can remove all these styles by 
 -------------------------------------------------------------------------------- */
 @font-face{
   font-family: 'VideoJS';
-  src: url('/assets/fonts/vjs.eot');
-  src: url('/assets/fonts/vjs.eot?#iefix') format('embedded-opentype'),
-  url('/assets/fonts/vjs.woff') format('woff'),
-  url('/assets/fonts/vjs.ttf') format('truetype');
+  src: url('/assets/vjs.eot');
+  src: url('/assets/vjs.eot?#iefix') format('embedded-opentype'),
+  url('/assets/vjs.woff') format('woff'),
+  url('/assets/vjs.ttf') format('truetype');
   font-weight: normal;
   font-style: normal;
 }

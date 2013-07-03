@@ -6068,4 +6068,4 @@ vjs.plugin = function(name, init){
 
 
 
-videojs.options.flash.swf = "/assets/flash/video-js.swf";
+videojs.options.flash.swf = "/assets/video-js.swf";
