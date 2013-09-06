@@ -26,7 +26,7 @@ And that resource to application.css file
 ```sass
 /*
 *= require_self
-*= require videojs
+*= require video-js
 */
 ```
 
