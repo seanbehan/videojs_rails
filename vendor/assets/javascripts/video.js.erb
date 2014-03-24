@@ -2560,7 +2560,7 @@ vjs.Player.prototype.createEl = function(){
   // Remove width/height attrs from tag so CSS can make it 100% width/height
   tag.removeAttribute('width');
   tag.removeAttribute('height');
-  // Empty video tag sources and tracks so the built-in player doesn't use them also.
+  // Empty video tag tracks so the built-in player doesn't use them also.
   // This may not be fast enough to stop HTML5 browsers from reading the tags
   // so we'll need to turn off any default tracks if we're manually doing
   // captions and subtitles. videoElement.textTracks
@@ -2574,7 +2574,7 @@ vjs.Player.prototype.createEl = function(){
     while (nodesLength--) {
       node = nodes[nodesLength];
       nodeName = node.nodeName.toLowerCase();
-      if (nodeName === 'source' || nodeName === 'track') {
+      if (nodeName === 'track') {
         removeNodes.push(node);
       }
     }
@@ -2627,11 +2627,10 @@ vjs.Player.prototype.loadTech = function(techName, source){
   if (this.tech) {
     this.unloadTech();
 
-  // If the first time loading, HTML5 tag will exist but won't be initialized
-  // So we need to remove it if we're not loading HTML5
+  // if this is the first time loading, HTML5 tag will exist but won't be initialized
+  // so we need to remove it if we're not loading HTML5
   } else if (techName !== 'Html5' && this.tag) {
-    this.el_.removeChild(this.tag);
-    this.tag['player'] = null;
+    vjs.Html5.disposeMediaElement(this.tag);
     this.tag = null;
   }
 
@@ -2945,6 +2944,10 @@ vjs.Player.prototype.duration = function(seconds){
     this.cache_.duration = parseFloat(seconds);
 
     return this;
+  }
+
+  if (this.cache_.duration === undefined) {
+    this.onDurationChange();
   }
 
   return this.cache_.duration;
@@ -4510,7 +4513,7 @@ vjs.Html5 = vjs.MediaTechController.extend({
 
     // If the element source is already set, we may have missed the loadstart event, and want to trigger it.
     // We don't want to set the source again and interrupt playback.
-    if (source && this.el_.currentSrc == source.src) {
+    if (source && this.el_.currentSrc === source.src && this.el_.networkState > 0) {
       player.trigger('loadstart');
 
     // Otherwise set the source if one was provided.
@@ -4550,19 +4553,20 @@ vjs.Html5.prototype.createEl = function(){
   var player = this.player_,
       // If possible, reuse original tag for HTML5 playback technology element
       el = player.tag,
-      newEl;
+      newEl,
+      clone;
 
   // Check if this browser supports moving the element into the box.
   // On the iPhone video will break if you move the element,
   // So we have to create a brand new element.
   if (!el || this.features['movingMediaElementInDOM'] === false) {
 
-    // If the original tag is still there, remove it.
+    // If the original tag is still there, clone and remove it.
     if (el) {
-      el['player'] = null;
+      clone = el.cloneNode(false);
+      vjs.Html5.disposeMediaElement(el);
+      el = clone;
       player.tag = null;
-      player.el().removeChild(el);
-      el = el.cloneNode(false);
     } else {
       el = vjs.createEl('video', {
         id:player.id() + '_html5_api',
@@ -4741,6 +4745,29 @@ vjs.Html5.canControlVolume = function(){
 // List of all HTML5 events (various uses).
 vjs.Html5.Events = 'loadstart,suspend,abort,error,emptied,stalled,loadedmetadata,loadeddata,canplay,canplaythrough,playing,waiting,seeking,seeked,ended,durationchange,timeupdate,progress,play,pause,ratechange,volumechange'.split(',');
 
+vjs.Html5.disposeMediaElement = function(el){
+  if (!el) { return; }
+
+  el['player'] = null;
+
+  if (el.parentNode) {
+    el.parentNode.removeChild(el);
+  }
+
+  // remove any child track or source nodes to prevent their loading
+  while(el.hasChildNodes()) {
+    el.removeChild(el.firstChild);
+  }
+
+  // remove any src reference. not setting `src=''` because that causes a warning
+  // in firefox
+  el.removeAttribute('src');
+
+  // force the media element to update its loading state by calling load()
+  if (typeof el.load === 'function') {
+    el.load();
+  }
+};
 
 // HTML5 Feature detection and Device Fixes --------------------------------- //
 
