@@ -1,6 +1,6 @@
 /*!
 Video.js Default Styles (http://videojs.com)
-Version 4.2.2
+Version 4.3.0
 Create your own skin at http://designer.videojs.com
 */
 /* SKIN
@@ -395,6 +395,15 @@ easily in the skin designer. http://designer.videojs.com/
   -o-transition: all 0.4s;
   transition: all 0.4s;
 }
+/* Optionally center */
+.vjs-default-skin.vjs-big-play-centered .vjs-big-play-button {
+  /* Center it horizontally */
+  left: 50%;
+  margin-left: -2.1em;
+  /* Center it vertically */
+  top: 50%;
+  margin-top: -1.4000000000000001em;
+}
 /* Hide if controls are disabled */
 .vjs-default-skin.vjs-controls-disabled .vjs-big-play-button {
   display: none;
@@ -447,7 +456,7 @@ easily in the skin designer. http://designer.videojs.com/
   position: absolute;
   top: 50%;
   left: 50%;
-  font-size: 5em;
+  font-size: 4em;
   line-height: 1;
   width: 1em;
   height: 1em;
@@ -461,7 +470,7 @@ easily in the skin designer. http://designer.videojs.com/
   animation: spin 1.5s infinite linear;
 }
 .vjs-default-skin .vjs-loading-spinner:before {
-  content: "\e00a";
+  content: "\e01e";
   font-family: VideoJS;
   position: absolute;
   top: 0;
