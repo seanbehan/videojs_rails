@@ -1,6 +1,6 @@
 /*!
 Video.js Default Styles (http://videojs.com)
-Version 4.5.2
+Version 4.6.1
 Create your own skin at http://designer.videojs.com
 */
 /* SKIN
@@ -18,7 +18,7 @@ e.g. <video class="video-js my-skin-name">
 The control icons are from a custom font. Each icon corresponds to a character
 (e.g. "\e001"). Font icons allow for easy scaling and coloring of icons.
 */
-@font-face{
+@font-face {
   font-family: 'VideoJS';
   src: url('<%= asset_path('vjs.eot') %>');
   src: url('<%= asset_path('vjs.eot?#iefix') %>') format('embedded-opentype'),
@@ -121,6 +121,10 @@ The default control bar that is a container for most of the controls.
 .vjs-default-skin.vjs-using-native-controls .vjs-control-bar {
   display: none;
 }
+/* The control bar shouldn't show after an error */
+.vjs-default-skin.vjs-error .vjs-control-bar {
+  display: none;
+}
 /* IE8 is flakey with fonts, and you have to change the actual content to force
 fonts to show/hide properly.
   - "\9" IE8 hack didn't work for this
@@ -191,6 +195,25 @@ fonts to show/hide properly.
 .vjs-default-skin.vjs-playing .vjs-play-control:before {
   content: "\e002";
 }
+/* Playback toggle
+--------------------------------------------------------------------------------
+*/
+.vjs-default-skin .vjs-playback-rate .vjs-playback-rate-value {
+  font-size: 1.5em;
+  line-height: 2;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  text-align: center;
+  text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.5);
+}
+.vjs-default-skin .vjs-playback-rate.vjs-menu-button .vjs-menu .vjs-menu-content {
+  width: 4em;
+  left: -2em;
+  list-style: none;
+}
 /* Volume/Mute
 -------------------------------------------------------------------------------- */
 .vjs-default-skin .vjs-mute-control,
@@ -231,11 +254,19 @@ fonts to show/hide properly.
   top: 0;
   left: 0;
   height: 0.5em;
+  /* assuming volume starts at 1.0 */
+
+  width: 100%;
   background: #66a8cc url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAYAAAAGCAYAAADgzO9IAAAAP0lEQVQIHWWMAQoAIAgDR/QJ/Ub//04+w7ZICBwcOg5FZi5iBB82AGzixEglJrd4TVK5XUJpskSTEvpdFzX9AB2pGziSQcvAAAAAAElFTkSuQmCC) -50% 0 repeat;
 }
 .vjs-default-skin .vjs-volume-bar .vjs-volume-handle {
   width: 0.5em;
   height: 0.5em;
+  /* Assumes volume starts at 1.0. If you change the size of the
+     handle relative to the volume bar, you'll need to update this value
+     too. */
+
+  left: 4.5em;
 }
 .vjs-default-skin .vjs-volume-handle:before {
   font-size: 0.9em;
@@ -293,6 +324,9 @@ fonts to show/hide properly.
   height: 100%;
   margin: 0;
   padding: 0;
+  /* updated by javascript during playback */
+
+  width: 0;
   /* Needed for IE6 */
   left: 0;
   top: 0;
@@ -319,6 +353,25 @@ fonts to show/hide properly.
 }
 .vjs-default-skin .vjs-seek-handle:before {
   padding-top: 0.1em /* Minor adjustment */;
+}
+/* Live Mode
+--------------------------------------------------------------------------------
+*/
+.vjs-default-skin.vjs-live .vjs-time-controls,
+.vjs-default-skin.vjs-live .vjs-time-divider,
+.vjs-default-skin.vjs-live .vjs-progress-control {
+  display: none;
+}
+.vjs-default-skin.vjs-live .vjs-live-display {
+  display: block;
+}
+/* Live Display
+--------------------------------------------------------------------------------
+*/
+.vjs-default-skin .vjs-live-display {
+  display: none;
+  font-size: 1em;
+  line-height: 3em;
 }
 /* Time Display
 --------------------------------------------------------------------------------
@@ -448,6 +501,52 @@ easily in the skin designer. http://designer.videojs.com/
   width: 100%;
   height: 100%;
 }
+.vjs-error .vjs-big-play-button {
+  display: none;
+}
+/* Error Display
+--------------------------------------------------------------------------------
+*/
+.vjs-error-display {
+  display: none;
+}
+.vjs-error .vjs-error-display {
+  display: block;
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+}
+.vjs-error .vjs-error-display:before {
+  content: 'X';
+  font-family: Arial;
+  font-size: 4em;
+  color: #666666;
+  /* In order to center the play icon vertically we need to set the line height
+     to the same as the button height */
+
+  line-height: 1;
+  text-shadow: 0.05em 0.05em 0.1em #000;
+  text-align: center /* Needed for IE8 */;
+  vertical-align: middle;
+  position: absolute;
+  top: 50%;
+  margin-top: -0.5em;
+  width: 100%;
+}
+.vjs-error-display div {
+  position: absolute;
+  font-size: 1.4em;
+  text-align: center;
+  bottom: 1em;
+  right: 1em;
+  left: 1em;
+}
+.vjs-error-display a,
+.vjs-error-display a:visited {
+  color: #F4A460;
+}
 /* Loading Spinner
 --------------------------------------------------------------------------------
 */
@@ -468,6 +567,22 @@ easily in the skin designer. http://designer.videojs.com/
   -moz-animation: spin 1.5s infinite linear;
   -o-animation: spin 1.5s infinite linear;
   animation: spin 1.5s infinite linear;
+}
+/* Errors are unrecoverable without user interaction,
+   so hide the spinner in the case of an error */
+.video-js.vjs-error .vjs-loading-spinner {
+  /* using !important flag because currently the loading spinner
+     uses hide()/show() instead of classes. The !important can be
+     removed when that's updated */
+
+  display: none !important;
+  /* ensure animation doesn't continue while hidden */
+
+  /* animation */
+  -webkit-animation: none;
+  -moz-animation: none;
+  -o-animation: none;
+  animation: none;
 }
 .vjs-default-skin .vjs-loading-spinner:before {
   content: "\e01e";
@@ -766,6 +881,25 @@ body.vjs-full-window {
   display: block !important;
   opacity: 1;
   visibility: visible;
+}
+/*  In IE8 w/ no JavaScript (no HTML5 shim), the video tag doesn't register.
+    The .video-js classname on the video tag also isn't considered.
+    This optional paragraph inside the video tag can provide a message to users
+    about what's required to play video. */
+.vjs-no-js {
+  padding: 20px;
+  color: #ccc;
+  background-color: #333;
+  font-size: 18px;
+  font-family: Arial, sans-serif;
+  text-align: center;
+  width: 300px;
+  height: 150px;
+  margin: 0px auto;
+}
+.vjs-no-js a,
+.vjs-no-js a:visited {
+  color: #F4A460;
 }
 /* -----------------------------------------------------------------------------
 The original source of this file lives at
