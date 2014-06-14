@@ -44,6 +44,14 @@ config.assets.precompile += %w( video-js.swf vjs.eot vjs.svg vjs.ttf vjs.woff )
 <%= videojs_rails sources: { mp4: "http://domain.com/path/to/video.mp4", webm: "http://another.com/path/to/video.webm" }, width:"400" %>
 ```
 
+If you want add a callback if user don't support JavaScript use block with displayed html code:
+
+```erb
+<%= videojs_rails sources: { mp4: "http://domain.com/path/to/video.mp4", webm: "http://another.com/path/to/video.webm" }, width:"400" do %>
+	Please enable <b>JavaScript</b> to see this content.
+<%- end %>
+```
+
 ## Captions
 
 This is currently experimental function.
