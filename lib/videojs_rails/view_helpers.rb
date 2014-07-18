@@ -7,7 +7,7 @@ module VideojsRails
         preload: "auto"
       }
       options = default_options.merge(options.extract_options!)
-      render layout: 'videojs_rails/videojs_rails', locals: { options: options }, &blk
+      render partial: 'videojs_rails/videojs_rails', locals: { options: options }, &blk
     end
   end
 end
