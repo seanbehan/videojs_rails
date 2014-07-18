@@ -1,23 +1,23 @@
 <div class="video-js-box">
 	<video
-	  id="<%=@options[:id]%>"
-		class="<%= @options[:classes] %> video-js vjs-default-skin"
-		<%= "controls" if !!@options[:controls] %>
-		preload="<%=@options[:preload]%>"
-		width="<%=@options[:width]%>"
-		height="<%=@options[:height]%>"
-		poster="<%= @options[:poster] %>"
-		data-setup="<%= @options[:setup] %>"
+	  id="<%=options[:id]%>"
+		class="<%= options[:classes] %> video-js vjs-default-skin"
+		<%= "controls" if !!options[:controls] %>
+		preload="<%=options[:preload]%>"
+		width="<%=options[:width]%>"
+		height="<%=options[:height]%>"
+		poster="<%= options[:poster] %>"
+		data-setup="<%= options[:setup] %>"
 	>
-		<% if @options[:sources] %>
-			<%- @options[:sources].each do |type, source| %>
+		<% if options[:sources] %>
+			<%- options[:sources].each do |type, source| %>
 				<source src="<%= source %>" type='video/<%= type %>' />
 			<%- end %>
 		<%- end %>
 
 		<%# TODO: Add some function to change ISO country code to name %>
-		<% if @options[:captions] %>
-			<%- @options[:captions].each do |lang, caption| %>
+		<% if options[:captions] %>
+			<%- options[:captions].each do |lang, caption| %>
 				<track kind="captions" src="<%= caption %>" srclang="<%= lang %>" label="<%= lang %>"></track>
 			<%- end %>
 		<%- end %>
