@@ -57,7 +57,7 @@ If you want add a callback if user don't support JavaScript use block with displ
 This is currently experimental function.
 
 ```erb
-<%= videojs_rails sources: { mp4: "http://domain.com/path/to/video.mp4" }, width:"400", captions: { en: "http://domain.com/path/to/captions.vvt" } %>
+<%= videojs_rails sources: { mp4: "http://domain.com/path/to/video.mp4" }, width:"400", captions: { en: { src: "http://domain.com/path/to/captions.vvt", label: "English" }, default_caption_language: :en } %>
 ```
 
 
