@@ -1,6 +1,6 @@
 <div class="video-js-box">
 	<video
-	  id="<%=options[:id]%>"
+		id="<%=options[:id]%>"
 		class="<%= options[:classes] %> video-js vjs-default-skin"
 		<%= "controls" if !!options[:controls] %>
 		preload="<%=options[:preload]%>"
@@ -15,13 +15,20 @@
 			<%- end %>
 		<%- end %>
 
-		<%# TODO: Add some function to change ISO country code to name %>
 		<% if options[:captions] %>
 			<%- options[:captions].each do |lang, caption| %>
-				<track kind="captions" src="<%= caption %>" srclang="<%= lang %>" label="<%= lang %>"></track>
+				<% if caption.is_a?(Hash) %>
+					<%- caption_src = caption[:src] %>
+					<%- caption_label = caption[:label] %>
+				<%- else %>
+					<%- caption_src = caption %>
+					<%# TODO: Add some function to change ISO country code to label %>
+					<%- caption_label = lang %>
+				<%- end %>
+				<track kind="captions" src="<%= caption_src %>" srclang="<%= lang %>" label="<%= caption_label %>"<%= ' default' if options[:default_caption_language].to_sym == lang.to_sym %>></track>
 			<%- end %>
 		<%- end %>
 
 		<p class="vjs-no-js"><%= yield %></p>
-  </video>
+	</video>
 </div>
