@@ -27,13 +27,12 @@ namespace :videojs do
       sh "cp #{VIDEO_JS_HOME}/dist/video-js/font/* #{VIDEO_JS_RAILS_HOME}/vendor/assets/fonts/"
       sh "cp #{VIDEO_JS_HOME}/dist/video-js/video-js.css #{VIDEO_JS_RAILS_HOME}/vendor/assets/stylesheets/"
       sh "cp #{VIDEO_JS_HOME}/dist/video-js/video-js.swf #{VIDEO_JS_RAILS_HOME}/vendor/assets/javascripts/"
-      sh "cp #{VIDEO_JS_HOME}/dist/video-js/video.dev.js #{VIDEO_JS_RAILS_HOME}/vendor/assets/javascripts/video.js"
+      sh "cp #{VIDEO_JS_HOME}/dist/video-js/video.dev.js #{VIDEO_JS_RAILS_HOME}/vendor/assets/javascripts/"
 
       # Now, perform some asset_path and other substitutions
-      css = "#{VIDEO_JS_RAILS_HOME}/vendor/assets/stylesheets/video-js.css"
-
       puts
       puts "* Updating videojs-css.erb for Rails asset pipeline"
+      css = "#{VIDEO_JS_RAILS_HOME}/vendor/assets/stylesheets/video-js.css"
       File.open("#{css}.erb", 'w') do |out|
         File.foreach(css) do |line|
           # Handle fonts => url('<%= asset_path('vjs.woff') %>') format('woff')
@@ -42,6 +41,19 @@ namespace :videojs do
         end
       end
       sh "rm -f #{css}"
+
+      puts
+      puts "* Updating video.js.erb for Rails asset pipeline"
+      jsdev = "#{VIDEO_JS_RAILS_HOME}/vendor/assets/javascripts/video.dev.js"
+      jserb = "#{VIDEO_JS_RAILS_HOME}/vendor/assets/javascripts/video.js.erb"
+      File.open(jserb, 'w') do |out|
+        File.foreach(jsdev) do |line|
+          # Handle swf => asset_path('video-js.swf')
+          out <<
+            line.sub(/(videojs\.options\['flash'\]\['swf'\]\s*=\s*).*/, %q(\1"<%= asset_path('video-js.swf') %>";))
+        end
+      end
+      sh "rm -f #{jsdev}"
     end
   end
 
