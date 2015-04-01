@@ -38,7 +38,7 @@ namespace :videojs do
         File.foreach(css) do |line|
           # Handle fonts => url('<%= asset_path('vjs.woff') %>') format('woff')
           out <<
-            line.gsub(/url\(('*)font\/(vjs[^\)]+)\)\s+(format[^\)]+\))/, 'url(<%= asset_path(\1\2) %>) \3')
+            line.gsub(/url\(('*)font\/(vjs[^\)]+)\)(\s+format[^\)]+\))?/, 'url(<%= asset_path(\1\2) %>)\3')
         end
       end
       sh "rm -f #{css}"
