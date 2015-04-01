@@ -54,6 +54,7 @@ namespace :videojs do
         end
       end
       sh "rm -f #{jsdev}"
+      sh "rm -f #{VIDEO_JS_RAILS_HOME}/vendor/assets/javascripts/video.js"
     end
   end
 
