@@ -1,4 +1,6 @@
-# VideoJS for Asset Pipeline
+# VideoJS for Rails Asset Pipeline
+
+Supports Rails 3.x and 4.x
 
 ## Installation
 
@@ -30,8 +32,6 @@ And that resource to application.css file
 */
 ```
 
-_currently skins are not implemented (after migrate to 4.1 version)_
-
 And to production.rb add this line
 
 ```ruby
@@ -54,7 +54,7 @@ If you want add a callback if user don't support JavaScript use block with displ
 
 ## Captions
 
-This is currently experimental function.
+This is currently an experimental function.
 
 ```erb
 <%= videojs_rails sources: { mp4: "http://domain.com/path/to/video.mp4" }, width:"400", captions: { en: { src: "http://domain.com/path/to/captions.vvt", label: "English" }, default_caption_language: :en } %>
@@ -66,23 +66,32 @@ http://videojs.com/
 http://videojs.com/#getting-started
 
 
-## Update from video.js release
+## Updating this gem to the latest video.js release
 
-### Generate video.js distribution files
+### Clone this repository
 
-* Checkout release tag e.g. `git checkout v4.6.1`.
-* Run the build i.e. `grunt`.
+    git clone https://github.com/seanbehan/videojs_rails.git
 
-### Copy video.js files into videojs_rails
+### Clone video.js repository
 
-    $ cp $VIDEO_JS_HOME/dist/video-js/video-js.swf $VIDEO_JS_RAILS_HOME/vendor/assets/flash/
-    $ cp $VIDEO_JS_HOME/dist/video-js/font/* $VIDEO_JS_RAILS_HOME/vendor/assets/fonts/
-    $ cp $VIDEO_JS_HOME/dist/video-js/video.dev.js $VIDEO_JS_RAILS_HOME/vendor/assets/javascripts/video.js.erb
-    $ cp $VIDEO_JS_HOME/dist/video-js/video-js.css $VIDEO_JS_RAILS_HOME/vendor/assets/stylesheets/video-js.css.erb
+    git clone https://github.com/videojs/video.js.git
 
-### Update video.js files with ERB from previous version of videojs_rails
 
-The following files need to be modified to use the Rails `asset_path` helper e.g. for the location of the Flash player SWF file and for the location of the various font files:
+### Run the rake videojs:update task with the tag
 
-* $VIDEO_JS_RAILS_HOME/vendor/assets/javascripts/video.js.erb
-* $VIDEO_JS_RAILS_HOME/vendor/assets/stylesheets/video-js.css.erb
+    TAG=v4.12.5
+    rake videojs:update
+
+Note: The build will fail if you don't have `grunt` installed.  To install it:
+
+    cd ../video.js
+    npm install -g grunt
+
+### Make sure everything is added to git
+
+    git add .
+    git ci -m "Update to $TAG"
+
+### Push to rubygems
+
+    rake release
