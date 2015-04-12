@@ -86,3 +86,11 @@ The following files need to be modified to use the Rails `asset_path` helper e.g
 
 * $VIDEO_JS_RAILS_HOME/vendor/assets/javascripts/video.js.erb
 * $VIDEO_JS_RAILS_HOME/vendor/assets/stylesheets/video-js.css.erb
+
+Alternatively, you can set the Flash player SWF file in your web view with the `videojs.options.flash.swf` command:
+```
+<script>
+  videojs.options.flash.swf = "http://example.com/path/to/video-js.swf"
+</script>
+```
+As the instructions here suggests: https://github.com/videojs/video.js/blob/stable/docs/guides/setup.md#self-hosted
