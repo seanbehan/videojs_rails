@@ -38,6 +38,13 @@ And to production.rb add this line
 config.assets.precompile += %w( video-js.swf vjs.eot vjs.svg vjs.ttf vjs.woff )
 ```
 
+In Rails > 4.1
+Add this line to config/initializers/assets.rb
+
+```ruby
+Rails.application.config.assets.precompile += %w( video-js.swf vjs.eot vjs.svg vjs.ttf vjs.woff )
+```
+
 ## Usage
 
 ```erb
