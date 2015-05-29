@@ -67,6 +67,23 @@ This is currently experimental function.
 <%= videojs_rails sources: { mp4: "http://domain.com/path/to/video.mp4" }, width:"400", captions: { en: { src: "http://domain.com/path/to/captions.vvt", label: "English" }, default_caption_language: :en } %>
 ```
 
+## Turbolinks
+
+Some of you might want to use VideoJS with Turbolinks. [andrkrn](https://github.com/andrkrn) provided CoffeeScript that he use:
+
+```coffeescript
+change = ->
+    for player in document.getElementsByClassName 'video-js'
+        video = videojs('example_video')
+
+before_change = ->
+    for player in document.getElementsByClassName 'video-js'
+        video = videojs('example_video')
+        video.dispose()
+
+$(document).on('page:before-change', before_change)
+$(document).on('page:change', change)
+```
 
 ## Resources
 http://videojs.com/
