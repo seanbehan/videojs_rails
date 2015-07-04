@@ -1,6 +1,6 @@
 /*!
 Video.js Default Styles (http://videojs.com)
-Version 4.6.4
+Version 4.6.2
 Create your own skin at http://designer.videojs.com
 */
 /* SKIN
@@ -20,10 +20,8 @@ The control icons are from a custom font. Each icon corresponds to a character
 */
 @font-face {
   font-family: 'VideoJS';
-  src: url('<%= asset_path('vjs.eot') %>');
-  src: url('<%= asset_path('vjs.eot?#iefix') %>') format('embedded-opentype'),
-  url('<%= asset_path('vjs.woff') %>') format('woff'),
-  url('<%= asset_path('vjs.ttf') %>') format('truetype');
+  src: url(<%= asset_path('vjs.eot') %>);
+  src: url(<%= asset_path('vjs.eot?#iefix') %>) format('embedded-opentype'), url(<%= asset_path('vjs.woff') %>) format('woff'), url(<%= asset_path('vjs.ttf') %>) format('truetype');
   font-weight: normal;
   font-style: normal;
 }
