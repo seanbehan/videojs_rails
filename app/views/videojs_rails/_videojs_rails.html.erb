@@ -1,34 +1,31 @@
-<div class="video-js-box">
-	<video
-		id="<%=options[:id]%>"
-		class="<%= options[:classes] %> video-js vjs-default-skin"
-		<%= "controls" if !!options[:controls] %>
-		preload="<%=options[:preload]%>"
-		width="<%=options[:width]%>"
-		height="<%=options[:height]%>"
-		poster="<%= options[:poster] %>"
-		data-setup="<%= options[:setup] %>"
-	>
-		<% if options[:sources] %>
-			<%- options[:sources].each do |type, source| %>
-				<source src="<%= source %>" type='video/<%= type %>' />
-			<%- end %>
-		<%- end %>
+<%= content_tag(:video,
+  id: options[:id],
+  class: "#{ options[:classes] } vide-js vjs-default-skin",
+  controls: options[:controls],
+  preload: options[:preload],
+  width: options[:width],
+  height: options[:height],
+  poster: options[:poster],
+  'data-setup' => options[:setup]) do 
+    if options[:sources]
+      options[:sources].each do |type, source|
+        concat tag(:source, src: source, type: "video/#{ type }")
+      end
+    end
 
-		<% if options[:captions] %>
-			<%- options[:captions].each do |lang, caption| %>
-				<% if caption.is_a?(Hash) %>
-					<%- caption_src = caption[:src] %>
-					<%- caption_label = caption[:label] %>
-				<%- else %>
-					<%- caption_src = caption %>
-					<%# TODO: Add some function to change ISO country code to label %>
-					<%- caption_label = lang %>
-				<%- end %>
-				<track kind="captions" src="<%= caption_src %>" srclang="<%= lang %>" label="<%= caption_label %>"<%= ' default' if options[:default_caption_language].to_sym == lang.to_sym %>></track>
-			<%- end %>
-		<%- end %>
+    if options[:captions]
+      options[:captions].each do |lang, caption|
+        if caption.is_a?(Hash)
+          caption_src = caption[:src]
+          caption_label = caption[:label]
+        else
+          caption_src = caption
+        end
 
-		<p class="vjs-no-js"><%= yield %></p>
-	</video>
-</div>
+        concat tag(:track, kind: :captions, src: caption_src, srclang: lang, label: caption_label, default: (options[:default_caption_language].present? && options[:default_caption_language].to_sym == lang.to_sym))
+      end
+    end
+
+    concat content_tag(:p, class: 'vjs-no-js') { yield }
+  end
+%>
