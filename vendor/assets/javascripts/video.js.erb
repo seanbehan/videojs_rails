@@ -63,7 +63,7 @@ var vjs = function(id, options, ready){
 var videojs = window['videojs'] = vjs;
 
 // CDN Version. Used to target right flash swf.
-vjs.CDN_VERSION = '4.7';
+vjs.CDN_VERSION = '4.8';
 vjs.ACCESS_PROTOCOL = ('https:' == document.location.protocol ? 'https://' : 'http://');
 
 /**
@@ -92,6 +92,9 @@ vjs.options = {
   // Add playback rate selection by adding rates
   // 'playbackRates': [0.5, 1, 1.5, 2],
 
+  // default inactivity timeout
+  'inactivityTimeout': 2000,
+
   // Included control sets
   'children': {
     'mediaLoader': {},
@@ -113,7 +116,7 @@ vjs.options = {
 };
 
 // Set CDN Version of swf
-// The added (+) blocks the replace from changing this 4.7 string
+// The added (+) blocks the replace from changing this 4.8 string
 if (vjs.CDN_VERSION !== 'GENERATED'+'_CDN_VSN') {
   videojs.options['flash']['swf'] = "<%= asset_path('video-js.swf') %>";
 }
@@ -834,6 +837,17 @@ vjs.obj.isPlain = function(obj){
  */
 vjs.obj.isArray = Array.isArray || function(arr) {
   return Object.prototype.toString.call(arr) === '[object Array]';
+};
+
+/**
+ * Check to see whether the input is NaN or not.
+ * NaN is the only JavaScript construct that isn't equal to itself
+ * @param {Number} num Number to check
+ * @return {Boolean} True if NaN, false otherwise
+ * @private
+ */
+vjs.isNaN = function(num) {
+  return num !== num;
 };
 
 /**
@@ -2396,6 +2410,9 @@ vjs.Component.prototype.dimensions = function(width, height){
  */
 vjs.Component.prototype.dimension = function(widthOrHeight, num, skipListeners){
   if (num !== undefined) {
+    if (num === null || vjs.isNaN(num)) {
+      num = 0;
+    }
 
     // Check if using css width/height (% or px) and adjust
     if ((''+num).indexOf('%') !== -1 || (''+num).indexOf('px') !== -1) {
@@ -2644,7 +2661,7 @@ vjs.Button.prototype.onClick = function(){};
 
   // Focus - Add keyboard functionality to element
 vjs.Button.prototype.onFocus = function(){
-  vjs.on(document, 'keyup', vjs.bind(this, this.onKeyPress));
+  vjs.on(document, 'keydown', vjs.bind(this, this.onKeyPress));
 };
 
   // KeyPress (document level) - Trigger click when keys are pressed
@@ -2658,7 +2675,7 @@ vjs.Button.prototype.onKeyPress = function(event){
 
 // Blur - Remove keyboard triggers
 vjs.Button.prototype.onBlur = function(){
-  vjs.off(document, 'keyup', vjs.bind(this, this.onKeyPress));
+  vjs.off(document, 'keydown', vjs.bind(this, this.onKeyPress));
 };
 /* Slider
 ================================================================================ */
@@ -3614,7 +3631,6 @@ vjs.Player.prototype.unloadTech = function(){
 //   vjs.log('loadedTech')
 // },
 
-
 // /* Player event handlers (how the player reacts to certain events)
 // ================================================================================ */
 
@@ -4432,7 +4448,11 @@ vjs.Player.prototype.sourceList_ = function(sources){
       this.loadTech(sourceTech.tech, sourceTech.source);
     }
   } else {
-    this.error({ code: 4, message: this.localize(this.options()['notSupportedMessage']) });
+    // We need to wrap this in a timeout to give folks a chance to add error event handlers
+    setTimeout(vjs.bind(this, function() {
+      this.error({ code: 4, message: this.localize(this.options()['notSupportedMessage']) });
+    }), 0);
+
     // we could not find an appropriate tech, but let's still notify the delegate that this is it
     // this needs a better comment about why this is needed
     this.triggerReady();
@@ -4767,16 +4787,19 @@ vjs.Player.prototype.listenForUserActivity = function(){
       // Clear any existing inactivity timeout to start the timer over
       clearTimeout(inactivityTimeout);
 
-      // In X seconds, if no more activity has occurred the user will be
-      // considered inactive
-      inactivityTimeout = setTimeout(vjs.bind(this, function() {
-        // Protect against the case where the inactivityTimeout can trigger just
-        // before the next user activity is picked up by the activityCheck loop
-        // causing a flicker
-        if (!this.userActivity_) {
-          this.userActive(false);
-        }
-      }), 2000);
+      var timeout = this.options()['inactivityTimeout'];
+      if (timeout > 0) {
+          // In <timeout> milliseconds, if no more activity has occurred the
+          // user will be considered inactive
+          inactivityTimeout = setTimeout(vjs.bind(this, function () {
+              // Protect against the case where the inactivityTimeout can trigger just
+              // before the next user activity is picked up by the activityCheck loop
+              // causing a flicker
+              if (!this.userActivity_) {
+                  this.userActive(false);
+              }
+          }), timeout);
+      }
     }
   }), 250);
 
@@ -4793,7 +4816,7 @@ vjs.Player.prototype.playbackRate = function(rate) {
     return this;
   }
 
-  if (this.tech && this.tech.features && this.tech.features['playbackRate']) {
+  if (this.tech && this.tech['featuresPlaybackRate']) {
     return this.techGet('playbackRate');
   } else {
     return 1.0;
@@ -5335,11 +5358,11 @@ vjs.VolumeControl = vjs.Component.extend({
     vjs.Component.call(this, player, options);
 
     // hide volume controls when they're not supported by the current tech
-    if (player.tech && player.tech.features && player.tech.features['volumeControl'] === false) {
+    if (player.tech && player.tech['featuresVolumeControl'] === false) {
       this.addClass('vjs-hidden');
     }
     player.on('loadstart', vjs.bind(this, function(){
-      if (player.tech.features && player.tech.features['volumeControl'] === false) {
+      if (player.tech['featuresVolumeControl'] === false) {
         this.addClass('vjs-hidden');
       } else {
         this.removeClass('vjs-hidden');
@@ -5477,11 +5500,11 @@ vjs.MuteToggle = vjs.Button.extend({
     player.on('volumechange', vjs.bind(this, this.update));
 
     // hide mute toggle if the current tech doesn't support volume control
-    if (player.tech && player.tech.features && player.tech.features['volumeControl'] === false) {
+    if (player.tech && player.tech['featuresVolumeControl'] === false) {
       this.addClass('vjs-hidden');
     }
     player.on('loadstart', vjs.bind(this, function(){
-      if (player.tech.features && player.tech.features['volumeControl'] === false) {
+      if (player.tech['featuresVolumeControl'] === false) {
         this.addClass('vjs-hidden');
       } else {
         this.removeClass('vjs-hidden');
@@ -5545,11 +5568,11 @@ vjs.VolumeMenuButton = vjs.MenuButton.extend({
     player.on('volumechange', vjs.bind(this, this.update));
 
     // hide mute toggle if the current tech doesn't support volume control
-    if (player.tech && player.tech.features && player.tech.features.volumeControl === false) {
+    if (player.tech && player.tech['featuresVolumeControl'] === false) {
       this.addClass('vjs-hidden');
     }
     player.on('loadstart', vjs.bind(this, function(){
-      if (player.tech.features && player.tech.features.volumeControl === false) {
+      if (player.tech['featuresVolumeControl'] === false) {
         this.addClass('vjs-hidden');
       } else {
         this.removeClass('vjs-hidden');
@@ -5654,7 +5677,7 @@ vjs.PlaybackRateMenuButton.prototype.onClick = function(){
 
 vjs.PlaybackRateMenuButton.prototype.playbackRateSupported = function(){
   return this.player().tech
-    && this.player().tech.features['playbackRate']
+    && this.player().tech['featuresPlaybackRate']
     && this.player().options()['playbackRates']
     && this.player().options()['playbackRates'].length > 0
   ;
@@ -5903,12 +5926,12 @@ vjs.MediaTechController = vjs.Component.extend({
     vjs.Component.call(this, player, options, ready);
 
     // Manually track progress in cases where the browser/flash player doesn't report it.
-    if (!this.features['progressEvents']) {
+    if (!this['featuresProgressEvents']) {
       this.manualProgressOn();
     }
 
     // Manually track timeudpates in cases where the browser/flash player doesn't report it.
-    if (!this.features['timeupdateEvents']) {
+    if (!this['featuresTimeupdateEvents']) {
       this.manualTimeUpdatesOn();
     }
 
@@ -6094,7 +6117,7 @@ vjs.MediaTechController.prototype.manualTimeUpdatesOn = function(){
   // Watch for native timeupdate event
   this.one('timeupdate', function(){
     // Update known progress support for this playback technology
-    this.features['timeupdateEvents'] = true;
+    this['featuresTimeupdateEvents'] = true;
     // Turn off manual progress tracking
     this.manualTimeUpdatesOff();
   });
@@ -6145,18 +6168,16 @@ vjs.MediaTechController.prototype.setCurrentTime = function() {
  */
 vjs.MediaTechController.prototype.setPoster = function(){};
 
-vjs.MediaTechController.prototype.features = {
-  'volumeControl': true,
+vjs.MediaTechController.prototype['featuresVolumeControl'] = true;
 
-  // Resizing plugins using request fullscreen reloads the plugin
-  'fullscreenResize': false,
-  'playbackRate': false,
+// Resizing plugins using request fullscreen reloads the plugin
+vjs.MediaTechController.prototype['featuresFullscreenResize'] = false;
+vjs.MediaTechController.prototype['featuresPlaybackRate'] = false;
 
-  // Optional events that we can manually mimic with timers
-  // currently not triggered by video-js-swf
-  'progressEvents': false,
-  'timeupdateEvents': false
-};
+// Optional events that we can manually mimic with timers
+// currently not triggered by video-js-swf
+vjs.MediaTechController.prototype['featuresProgressEvents'] = false;
+vjs.MediaTechController.prototype['featuresTimeupdateEvents'] = false;
 
 vjs.media = {};
 /**
@@ -6174,19 +6195,19 @@ vjs.Html5 = vjs.MediaTechController.extend({
   /** @constructor */
   init: function(player, options, ready){
     // volume cannot be changed from 1 on iOS
-    this.features['volumeControl'] = vjs.Html5.canControlVolume();
+    this['featuresVolumeControl'] = vjs.Html5.canControlVolume();
 
     // just in case; or is it excessively...
-    this.features['playbackRate'] = vjs.Html5.canControlPlaybackRate();
+    this['featuresPlaybackRate'] = vjs.Html5.canControlPlaybackRate();
 
     // In iOS, if you move a video element in the DOM, it breaks video playback.
-    this.features['movingMediaElementInDOM'] = !vjs.IS_IOS;
+    this['movingMediaElementInDOM'] = !vjs.IS_IOS;
 
     // HTML video is able to automatically resize when going to fullscreen
-    this.features['fullscreenResize'] = true;
+    this['featuresFullscreenResize'] = true;
 
     // HTML video supports progress events
-    this.features['progressEvents'] = true;
+    this['featuresProgressEvents'] = true;
 
     vjs.MediaTechController.call(this, player, options, ready);
     this.setupTriggers();
@@ -6236,7 +6257,7 @@ vjs.Html5.prototype.createEl = function(){
   // Check if this browser supports moving the element into the box.
   // On the iPhone video will break if you move the element,
   // So we have to create a brand new element.
-  if (!el || this.features['movingMediaElementInDOM'] === false) {
+  if (!el || this['movingMediaElementInDOM'] === false) {
 
     // If the original tag is still there, clone and remove it.
     if (el) {
@@ -6386,7 +6407,13 @@ vjs.Html5.prototype.enterFullScreen = function(){
 vjs.Html5.prototype.exitFullScreen = function(){
   this.el_.webkitExitFullScreen();
 };
-vjs.Html5.prototype.src = function(src){ this.el_.src = src; };
+vjs.Html5.prototype.src = function(src) {
+  if (src === undefined) {
+    return this.el_.src;
+  } else {
+    this.el_.src = src;
+  }
+};
 vjs.Html5.prototype.load = function(){ this.el_.load(); };
 vjs.Html5.prototype.currentSrc = function(){ return this.el_.currentSrc; };
 
