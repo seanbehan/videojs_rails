@@ -1,5 +1,10 @@
 module VideojsRails
   module ViewHelpers
+      DEFAULT_OPTIONS = {
+        controls: true,
+        preload: :auto
+      }.freeze
+
     def videojs_rails(user_options, &blk)
       sources, captions, options = prepare_options(user_options)
       generate_tag(options, sources, captions, &blk)
@@ -8,13 +13,9 @@ module VideojsRails
     private
 
     def prepare_options(user_options)
-      default_options = {
-        controls: true,
-        preload: :auto
-      }
-
-      options = default_options.merge(user_options)
+      options = DEFAULT_OPTIONS.merge(user_options)
       options[:'data-setup'] = options.delete(:setup) if options.key?(:setup)
+      options[:class] = [options[:class], "vide-js vjs-default-skin"].join(' ')
 
       [options.delete(:sources), options.delete(:captions), options]
     end
