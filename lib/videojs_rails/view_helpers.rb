@@ -15,7 +15,7 @@ module VideojsRails
     def prepare_options(user_options)
       options = DEFAULT_OPTIONS.merge(user_options)
       options[:'data-setup'] = options.delete(:setup) if options.key?(:setup)
-      options[:class] = [options[:class], "vide-js vjs-default-skin"].join(' ')
+      options[:class] = [options[:class], "video-js vjs-default-skin"].join(' ')
 
       [options.delete(:sources), options.delete(:captions), options]
     end
