@@ -1,9 +1,9 @@
 module VideojsRails
   module ViewHelpers
-      DEFAULT_OPTIONS = {
+    DEFAULT_OPTIONS = {
         controls: true,
         preload: :auto
-      }.freeze
+    }.freeze
 
     def videojs_rails(user_options, &blk)
       sources, captions, options = prepare_options(user_options)
@@ -21,9 +21,15 @@ module VideojsRails
     end
 
     def generate_sources(sources)
-      return if sources.blank?
-      sources.each do |type, source|
-        concat tag(:source, src: source, type: "video/#{ type }")
+      case sources.class
+        when Array
+          sources.each do |source|
+            concat tag(:source, source)
+          end
+        when Hash
+          sources.each do |type, source|
+            concat tag(:source, src: source, type: "video/#{ type }")
+          end
       end
     end
 
@@ -48,11 +54,11 @@ module VideojsRails
     def prepare_caption_options(src, lang, label, options)
       default_caption_language = options[:default_caption_language].try(:to_sym)
       {
-        kind: :captions,
-        src: src,
-        srclang: lang,
-        label: label,
-        default: default_caption_language == lang.to_sym
+          kind: :captions,
+          src: src,
+          srclang: lang,
+          label: label,
+          default: default_caption_language == lang.to_sym
       }
     end
 
