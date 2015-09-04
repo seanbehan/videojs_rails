@@ -21,15 +21,14 @@ module VideojsRails
     end
 
     def generate_sources(sources)
-      case sources.class
-        when Array
-          sources.each do |source|
-            concat tag(:source, source)
-          end
-        when Hash
-          sources.each do |type, source|
-            concat tag(:source, src: source, type: "video/#{ type }")
-          end
+      if sources.is_a?(Array)
+        sources.each do |source|
+          concat tag(:source, source)
+        end
+      elsif sources.is_a?(Hash)
+        sources.each do |type, source|
+          concat tag(:source, src: source, type: "video/#{ type }")
+        end
       end
     end
 
