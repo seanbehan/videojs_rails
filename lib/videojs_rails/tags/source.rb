@@ -16,15 +16,15 @@ module VideojsRails
 
       def parse_options(options)
         case options
-          when String, Symbol
-            {
-                src: options,
-                type: type
-            }
-          when Hash
-            options
-          else
-            raise ArgumentError
+        when String, Symbol
+          {
+            src: options,
+            type: type
+          }
+        when Hash
+          options
+        else
+          raise ArgumentError
         end
       end
 
