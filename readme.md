@@ -81,7 +81,7 @@ before_change = ->
         video = videojs('example_video')
         video.dispose()
 
-$(document).on('page:before-change', before_change)
+$(document).on('page:before-unload', before_change)
 $(document).on('page:change', change)
 ```
 
