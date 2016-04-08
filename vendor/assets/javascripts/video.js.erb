@@ -80,7 +80,7 @@ vjs.ACCESS_PROTOCOL = ('https:' == document.location.protocol ? 'https://' : 'ht
 * Full player version
 * @type {string}
 */
-vjs['VERSION'] = '4.12.14';
+vjs['VERSION'] = '4.12.15';
 
 /**
  * Global Player instance options, surfaced from vjs.Player.prototype.options_
@@ -7882,6 +7882,10 @@ vjs.Flash.prototype.dispose = function(){
 };
 
 vjs.Flash.prototype.play = function(){
+  if (this.ended()) {
+    this['setCurrentTime'](0);
+  }
+
   this.el_.vjs_play();
 };
 
@@ -9896,7 +9900,7 @@ vjs.plugin = function(name, init){
   vjs.Player.prototype[name] = init;
 };
 
-/* vtt.js - v0.11.11 (https://github.com/mozilla/vtt.js) built on 22-01-2015 */
+/* vtt.js - v0.12.1 (https://github.com/mozilla/vtt.js) built on 08-07-2015 */
 
 (function(root) {
   var vttjs = root.vttjs = {};
@@ -10246,7 +10250,7 @@ vjs.plugin = function(name, init){
 
   var scrollSetting = {
     "": true,
-    "up": true,
+    "up": true
   };
 
   function findScrollSetting(value) {
@@ -11162,7 +11166,7 @@ vjs.plugin = function(name, init){
     if (cue.vertical === "") {
       this.applyStyles({
         left:  this.formatStyle(textPos, "%"),
-        width: this.formatStyle(cue.size, "%"),
+        width: this.formatStyle(cue.size, "%")
       });
     // Vertical box orientation; textPos is the distance from the top edge of the
     // area to the top edge of the box and cue.size is the height extending
@@ -11181,7 +11185,7 @@ vjs.plugin = function(name, init){
         left: this.formatStyle(box.left, "px"),
         right: this.formatStyle(box.right, "px"),
         height: this.formatStyle(box.height, "px"),
-        width: this.formatStyle(box.width, "px"),
+        width: this.formatStyle(box.width, "px")
       });
     };
   }
